@@ -16,8 +16,12 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
-
-    return true;
+    int sys = system(cmd);
+    if(!sys){
+        return true;
+    }else {
+        return false;
+    }
 }
 
 /**
@@ -47,7 +51,7 @@ bool do_exec(int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+    //command[count] = command[count];
 
 /*
  * TODO:
@@ -58,11 +62,30 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
-
+    int status;
+    fflush(stdout);
+    pid_t pid = fork();
+    //*********************the Child process*******************************//
+    if(!pid){ 
+        execv(command[0], command);
+        exit(1);
+    }
+    //*********************The parent of pid*********************************//
+    else if(pid > 0){ 
+        waitpid(-1, &status, 0);
+        if (!WEXITSTATUS(status)){
+             return true;
+        }else{
+            return false;
+        }
+    }
+    //*******************pid == -1 ********************************************//
+    else{
+         return false;
+    }
     va_end(args);
-
-    return true;
 }
+
 
 /**
 * @param outputfile - The full path to the file to write with command output.
@@ -82,7 +105,7 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
     command[count] = NULL;
     // this line is to avoid a compile warning before your implementation is complete
     // and may be removed
-    command[count] = command[count];
+    //command[count] = command[count];
 
 
 /*
@@ -92,8 +115,42 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
+ 
+    int status;
+    int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+    if (fd < 0) { 
+        perror("open"); 
+        abort(); 
+    }
+    fflush(stdout);
+    pid_t pid = fork();
+    //*********************the Child process*******************************//
+    if(!pid){
+        if(dup2(fd, 1) < 0) {
+            perror("dub2"); 
+            abort();
 
+    
+        }
+        execv(command[0], command);
+        close (fd);
+        return true;
+    }
+    //*********************The parent of pid*********************************//
+    else if(pid > 0){
+        waitpid(-1, &status, 0);
+        if (!WEXITSTATUS(status)){
+             return true;
+        }else{
+            return false;
+        }
+    }
+    //*******************pid == -1 **********************************//
+    else{
+        return false;
+    } 
     va_end(args);
-
-    return true;
 }
+
+
+
