@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <stdlib.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <syslog.h>
 #include <sys/types.h>
