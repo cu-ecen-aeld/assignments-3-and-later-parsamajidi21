@@ -62,7 +62,7 @@ then
 fi
 
 # TODO: Create necessary base directories
-mkdir -p ${OUTDIR}/rootfs
+mkdir -p "${OUTDIR}/rootfs"
 cd "${OUTDIR}/rootfs"
 mkdir -p etc lib lib64 bin sbin dev home sys proc tmp usr var
 mkdir -p usr/bin usr/lib usr/sbin
