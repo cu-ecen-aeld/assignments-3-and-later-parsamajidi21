@@ -2,12 +2,10 @@ include source.mk
 
 
 
-ifeq ($(TAR), CROSS_COMPILE)
+ifeq ($(CROSS_COMPILE), aarch64-none-linux-gnu-)
 	CC=aarch64-none-linux-gnu-gcc
-	LD=aarch64-none-linux-gnu-ld
 else
 	CC=gcc
-	LD=ld
 endif
 
 BASENAME = writer
@@ -29,4 +27,4 @@ $(TARGET): $(OBJS)
 
 .PHONY: clean
 clean: 
-	rm -f $(OBJS) $(TARGET) 
+	rm -f $(OBJS) $(TARGET)  

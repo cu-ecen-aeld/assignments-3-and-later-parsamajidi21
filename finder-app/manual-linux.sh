@@ -43,7 +43,7 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
      CROSS_COMPILE=${CROSS_COMPILE} mrproper #deep clean
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} defconfig #create virt arm
-    make -j8 ARCH=arm64\
+    make -j4 ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} all #build all
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} modules #create modules
@@ -62,8 +62,9 @@ then
 fi
 
 # TODO: Create necessary base directories
-mkdir -p "${OUTDIR}/rootfs"
-cd "${OUTDIR}/rootfs"
+cd "$OUTDIR"
+mkdir -p rootfs
+cd rootfs
 mkdir -p etc lib lib64 bin sbin dev home sys proc tmp usr var
 mkdir -p usr/bin usr/lib usr/sbin
 mkdir -p var/log
@@ -75,9 +76,9 @@ git clone git://busybox.net/busybox.git
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
-    make mrproper
     make distclean
     make defconfig
+    echo "Finished Busybox Configuration"
 else
     cd busybox
 fi
@@ -85,9 +86,10 @@ fi
 # TODO: Make and install busybox
 make ARCH=${ARCH}\
     CROSS_COMPILE=${CROSS_COMPILE}
-make CONFIG_PREFIX=${OUTDIR}\
+make CONFIG_PREFIX=${OUTDIR}/rootfs\
     ARCH=${ARCH}\
     CROSS_COMPILE=${CROSS_COMPILE} install
+echo "Finished Busybox Make & Install"
 
 echo "Library dependencies"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
@@ -105,9 +107,8 @@ sudo mknod -m 666 /dev/null c 1 3
 sudo mknod -m 666 /dev/console c 5 1
 # TODO: Clean and build the writer utility
 cd ${FINDER_APP_DIR}
-export CROSS_COMPILE=${CROSS_COMPILE}
 make clean
-make all
+make all CROSS_COMPILE=${CROSS_COMPILE}
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
 cp ${FINDER_APP_DIR}/finder.sh ${OUTDIR}/rootfs/home
@@ -116,7 +117,7 @@ cp ${FINDER_APP_DIR}/finder-test.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
 # TODO: Chown the root directory
 cd ${OUTDIR}/rootfs
-sudo chown -R root:root *
+sudo chown -R root ${OUTDIR}/rootfs/
 # TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip -f ${OUTDIR}/initramfs.cpio
