@@ -40,15 +40,15 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
 
     # TODO: Add your kernel build steps here
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE}mrproper #deep clean
+     CROSS_COMPILE=${CROSS_COMPILE} mrproper #deep clean
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE}defconfig #create virt arm
+     CROSS_COMPILE=${CROSS_COMPILE} defconfig #create virt arm
     make -j8 ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE}all #build all
+     CROSS_COMPILE=${CROSS_COMPILE} all #build all
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE}modules #create modules
+     CROSS_COMPILE=${CROSS_COMPILE} modules #create modules
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE}dtbs #
+     CROSS_COMPILE=${CROSS_COMPILE} dtbs #
 fi
 
 echo "Adding the Image in outdir"
