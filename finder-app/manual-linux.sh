@@ -11,7 +11,7 @@ set -u
 #echo "This is a file" > "${OUTDIR}"
 OUTDIR=/tmp/aeld
 KERNEL_REPO=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-KERNEL_VERSION=v5.1.10
+KERNEL_VERSION=v5.19
 BUSYBOX_VERSION=1_33_1
 FINDER_APP_DIR=$(realpath $(dirname $0))
 ARCH=arm64
@@ -75,6 +75,7 @@ git clone git://busybox.net/busybox.git
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
+    make mrproper
     make distclean
     make defconfig
 else
@@ -93,7 +94,7 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
-SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot -v)
+SYSROOT=$(${CROSS_COMPILE} gcc -print-sysroot -v)
 cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ./lib
 cp ${SYSROOT}/lib64/libm.so.6 ./lib64
 cp ${SYSROOT}/lib64/libresolv.so.2 ./lib64
