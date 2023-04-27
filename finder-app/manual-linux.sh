@@ -40,7 +40,7 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
 
     # TODO: Add your kernel build steps here
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE} #deep clean
+     CROSS_COMPILE=${CROSS_COMPILE}mrproper #deep clean
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE}defconfig #create virt arm
     make -j8 ARCH=arm64\
