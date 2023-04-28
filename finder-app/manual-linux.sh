@@ -103,7 +103,8 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
-SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot -v)
+SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot)
+echo $SYSROOT
 cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ./lib
 cp ${SYSROOT}/lib64/libm.so.6 ./lib64
 cp ${SYSROOT}/lib64/libresolv.so.2 ./lib64
