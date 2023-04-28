@@ -42,13 +42,14 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} mrproper #deep clean
     make ARCH=arm64\
-     CROSS_COMPILE=${CROSS_COMPILE} defconfig #create virt arm
+     CROSS_COMPILE=${CROSS_COMPILE} defconfig #create virt qemu
     make -j4 ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} all #build all
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} modules #create modules
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} dtbs #
+    echo KERNEL BUILD DONE
 fi
 
 echo "Adding the Image in outdir"
@@ -76,7 +77,9 @@ git clone git://busybox.net/busybox.git
     cd busybox
     git checkout ${BUSYBOX_VERSION}
     # TODO:  Configure busybox
+    echo "Start Cleaning the Made Settings"
     make distclean
+     echo "Start Making Settings"   
     make defconfig
     echo "Finished Busybox Configuration"
 else
@@ -84,16 +87,18 @@ else
 fi
 
 # TODO: Make and install busybox
+echo "Start Make busybox"
 make ARCH=${ARCH}\
     CROSS_COMPILE=${CROSS_COMPILE}
+echo "FIRST TASK DONE"
 make CONFIG_PREFIX=${OUTDIR}/rootfs\
     ARCH=${ARCH}\
     CROSS_COMPILE=${CROSS_COMPILE} install
 echo "Finished Busybox Make & Install"
 
-echo "Library dependencies"
-${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
-${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
+echo "Library Dependencies"
+${CROSS_COMPILE} readelf -a bin/busybox | grep "program interpreter"
+${CROSS_COMPILE} readelf -a bin/busybox | grep "Shared library"
 
 # TODO: Add library dependencies to rootfs
 SYSROOT=$(${CROSS_COMPILE} gcc -print-sysroot -v)
@@ -117,7 +122,7 @@ cp ${FINDER_APP_DIR}/finder-test.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
 # TODO: Chown the root directory
 cd ${OUTDIR}/rootfs
-sudo chown -R root ${OUTDIR}/rootfs/
+sudo chown -R root:root *
 # TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip -f ${OUTDIR}/initramfs.cpio
