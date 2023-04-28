@@ -108,23 +108,28 @@ cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ./lib
 cp ${SYSROOT}/lib64/libm.so.6 ./lib64
 cp ${SYSROOT}/lib64/libresolv.so.2 ./lib64
 cp ${SYSROOT}/lib64/libc.so.6 ./lib64
-
+echo "Adding libraries DONE"
 # TODO: Make device nodes
+
 sudo mknod -m 666 /dev/null c 1 3
 sudo mknod -m 666 /dev/console c 5 1
+echo "MAKE node DONE"
 # TODO: Clean and build the writer utility
 cd ${FINDER_APP_DIR}
 make clean
 make all CROSS_COMPILE=${CROSS_COMPILE}
+echo "CLEAN AND BUILD WRITER DONE"
 # TODO: Copy the finder related scripts and executables to the /home directory
 # on the target rootfs
 cp ${FINDER_APP_DIR}/finder.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/../conf/username.txt ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/finder-test.sh ${OUTDIR}/rootfs/home
 cp ${FINDER_APP_DIR}/autorun-qemu.sh ${OUTDIR}/rootfs/home
+echo "DONE COPY FILES /HOME"
 # TODO: Chown the root directory
 cd ${OUTDIR}/rootfs
 sudo chown -R root:root *
+echo "chown DONE"
 # TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 gzip -f ${OUTDIR}/initramfs.cpio
