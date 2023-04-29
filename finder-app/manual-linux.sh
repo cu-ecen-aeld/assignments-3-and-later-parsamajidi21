@@ -49,28 +49,29 @@ if [ ! -e ${OUTDIR}/linux-stable/arch/${ARCH}/boot/Image ]; then
      CROSS_COMPILE=${CROSS_COMPILE} modules #create modules
     make ARCH=arm64\
      CROSS_COMPILE=${CROSS_COMPILE} dtbs #
+
     echo KERNEL BUILD DONE
 fi
 
 echo "Adding the Image in outdir"
 
 echo "Creating the staging directory for the root filesystem"
-cd "$OUTDIR"
+cd "${OUTDIR}"
 if [ -d "${OUTDIR}/rootfs" ]
 then
 	echo "Deleting rootfs directory at ${OUTDIR}/rootfs and starting over"
-    sudo rm  -rf ${OUTDIR}/rootfs
+    sudo rm  -rf "${OUTDIR}/rootfs"
 fi
 
 # TODO: Create necessary base directories
-cd "$OUTDIR"
-mkdir -p rootfs
-cd rootfs
+
+mkdir -p "${OUTDIR}/rootfs"
+cd "${OUTDIR}/rootfs"
 mkdir -p etc lib lib64 bin sbin dev home sys proc tmp usr var
 mkdir -p usr/bin usr/lib usr/sbin
 mkdir -p var/log
 
-cd "$OUTDIR"
+cd "${OUTDIR}"
 if [ ! -d "${OUTDIR}/busybox" ]
 then
 git clone git://busybox.net/busybox.git
@@ -83,7 +84,14 @@ git clone git://busybox.net/busybox.git
     make defconfig
     echo "Finished Busybox Configuration"
 else
-    cd busybox
+    cd "${OUTDIR}/busybox"
+    git checkout ${BUSYBOX_VERSION}
+    # TODO:  Configure busybox
+    echo "Start Cleaning the Made Settings"
+    make distclean
+     echo "Start Making Settings"   
+    make defconfig
+    echo "Finished Busybox Configuration"
 fi
 
 # TODO: Make and install busybox
@@ -96,7 +104,7 @@ make CONFIG_PREFIX=${OUTDIR}/rootfs\
     CROSS_COMPILE=${CROSS_COMPILE} install
 echo "Finished Busybox Make & Install"
 
-cd ${OUTDIR}/rootfs/
+cd "${OUTDIR}/rootfs"
 
 echo "Library Dependencies"
 ${CROSS_COMPILE}readelf -a bin/busybox | grep "program interpreter"
@@ -112,8 +120,8 @@ cp ${SYSROOT}/lib64/libc.so.6 ./lib64
 echo "Adding libraries DONE"
 # TODO: Make device nodes
 
-sudo mknod -m 666 /dev/null c 1 3
-sudo mknod -m 666 /dev/console c 5 1
+sudo mknod -m 666 ${OUTDIR}/rootfs/dev/null c 1 3
+sudo mknod -m 666 ${OUTDIR}/rootfs/dev/console c 5 1
 echo "MAKE node DONE"
 # TODO: Clean and build the writer utility
 cd ${FINDER_APP_DIR}
