@@ -119,7 +119,7 @@ cp ${SYSROOT}/lib64/libresolv.so.2 ./lib64
 cp ${SYSROOT}/lib64/libc.so.6 ./lib64
 echo "Adding libraries DONE"
 # TODO: Make device nodes
-
+echo "MAKE node Start"
 sudo mknod -m 666 ${OUTDIR}/rootfs/dev/null c 1 3
 sudo mknod -m 666 ${OUTDIR}/rootfs/dev/console c 5 1
 echo "MAKE node DONE"
@@ -141,4 +141,5 @@ sudo chown -R root:root *
 echo "chown DONE"
 # TODO: Create initramfs.cpio.gz
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
-gzip -f ${OUTDIR}/initramfs.cpio
+cd ${OUTDIR}
+gzip -f initramfs.cpio
