@@ -113,10 +113,10 @@ ${CROSS_COMPILE}readelf -a bin/busybox | grep "Shared library"
 # TODO: Add library dependencies to rootfs
 SYSROOT=$(${CROSS_COMPILE}gcc -print-sysroot)
 echo $SYSROOT
-cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ./lib
-cp ${SYSROOT}/lib64/libm.so.6 ./lib64
-cp ${SYSROOT}/lib64/libresolv.so.2 ./lib64
-cp ${SYSROOT}/lib64/libc.so.6 ./lib64
+cp ${SYSROOT}/lib/ld-linux-aarch64.so.1 ${OUTDIR}/rootfs/lib
+cp ${SYSROOT}/lib64/libm.so.6 ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libresolv.so.2 ${OUTDIR}/rootfs/lib64
+cp ${SYSROOT}/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64
 echo "Adding libraries DONE"
 # TODO: Make device nodes
 echo "MAKE node Start"
@@ -140,6 +140,7 @@ cd ${OUTDIR}/rootfs
 sudo chown -R root:root *
 echo "chown DONE"
 # TODO: Create initramfs.cpio.gz
+cd ${OUTDIR}/rootfs
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 cd ${OUTDIR}
 gzip -f initramfs.cpio
