@@ -145,3 +145,8 @@ cd ${OUTDIR}/rootfs
 find . | cpio -H newc -ov --owner root:root > ${OUTDIR}/initramfs.cpio
 cd ${OUTDIR}
 gzip -f initramfs.cpio
+if [ ! -d "/tmp/aeld"]
+then
+    mkdir "/tmp/aeld"
+    cp -r /tmp/aesd-autograder/* /tmp/aeld
+fi
