@@ -3,9 +3,9 @@ include source.mk
 
 
 ifeq ($(CROSS_COMPILE), aarch64-none-linux-gnu-)
-	CC=aarch64-none-linux-gnu-gcc
+	CC ?= aarch64-none-linux-gnu-gcc
 else
-	CC=gcc
+	CC ?= gcc
 endif
 
 BASENAME = writer
@@ -23,7 +23,7 @@ build: all
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $@
+	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
 .PHONY: clean
 clean: 
